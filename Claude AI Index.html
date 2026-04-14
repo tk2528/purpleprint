@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PurplePrint — Customer Journey Insights</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans','Helvetica Neue',-apple-system,sans-serif;background:#FAF9F6;color:#1a1a1a;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:2px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+button{cursor:pointer;font-family:inherit;outline:none}
+
+/* Header */
+.header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.06);padding:14px 32px}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1360px;margin:0 auto}
+.logo{font-size:20px;font-weight:700;letter-spacing:-0.02em;background:linear-gradient(135deg,#6366F1,#9333EA);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:11px;color:#9CA3AF;margin-top:2px}
+.vtabs{display:flex;gap:3px;background:rgba(0,0,0,0.03);border-radius:12px;padding:3px;border:1px solid rgba(0,0,0,0.04)}
+.vtab{padding:7px 14px;border-radius:10px;border:none;font-size:12px;font-weight:500;transition:all 0.25s;background:transparent;color:#6B7280}
+.vtab.active{background:#fff;color:#6366F1;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+
+/* Main */
+.main{max-width:1360px;margin:0 auto;padding:28px 32px 80px;position:relative;z-index:1}
+
+/* Stages */
+.stages{display:flex;gap:10px;margin-bottom:24px}
+.stage-card{background:#fff;border-radius:16px;padding:16px 18px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;border:2px solid transparent}
+.stage-card:hover{transform:translateY(-2px)}
+.stage-card.active{box-shadow:0 8px 28px rgba(0,0,0,0.06)}
+.stage-bar{position:absolute;top:0;left:0;right:0;height:3px;transition:opacity 0.3s;opacity:0.25}
+.stage-card.active .stage-bar{opacity:1}
+.stage-header{display:flex;justify-content:space-between;align-items:flex-start}
+.stage-label{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em}
+.stage-name{font-size:13.5px;font-weight:600;color:#111827;line-height:1.3;margin-top:4px}
+.stage-meta{display:flex;gap:6px;margin-top:10px;font-size:11px;color:#9CA3AF}
+
+/* Gauge */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+.gauge-label{font-size:8.5px;color:#9CA3AF;font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
+
+/* Hotspot */
+.hotspot{background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;animation:fadeIn 0.5s ease}
+.hotspot-icon{width:40px;height:40px;border-radius:12px;background:#FEE2E2;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* Steps */
+.steps-bar{display:flex;gap:4px;margin-bottom:18px;background:#fff;border-radius:14px;padding:4px;border:1px solid rgba(0,0,0,0.06)}
+.step-btn{flex:1;padding:14px 10px;border-radius:12px;border:none;transition:all 0.25s;text-align:center}
+.step-btn.active{color:#fff}
+
+/* JTBD */
+.jtbd-box{background:#fff;border-radius:14px;margin-bottom:18px;overflow:hidden;border:1px solid rgba(0,0,0,0.06)}
+.jtbd-toggle{width:100%;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border:none;background:transparent;color:#111827;font-size:13px;font-weight:600}
+.jtbd-content{padding:0 20px 18px;display:flex;gap:20px;animation:fadeIn 0.25s ease}
+.jtbd-col h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+.jtbd-col p{font-size:12.5px;color:#6B7280;line-height:1.55;margin-bottom:5px}
+
+/* Screens area */
+.screens-box{background:#fff;border-radius:16px;padding:22px;margin-bottom:18px;border:1px solid rgba(0,0,0,0.06)}
+.screens-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.screens-header h4{font-size:13px;font-weight:600;color:#111827}
+.screens-row{display:flex;gap:18px;overflow-x:auto;padding-bottom:6px}
+.screen-group{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:170px}
+.screen-pair{display:flex;gap:8px}
+.screen-story{width:100px;height:115px;border-radius:12px;overflow:hidden;flex-shrink:0;transition:all 0.25s;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;background:#FAFAFA;border:2px solid #E5E7EB}
+.screen-story.sel{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.screen-phone{width:56px;height:115px;border-radius:12px;overflow:hidden;flex-shrink:0;transition:all 0.25s;position:relative;background:#FAFAFA;border:2px solid #E5E7EB}
+.screen-phone.sel{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.screen-check{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.screen-check-sm{position:absolute;top:16px;right:3px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700}
+
+/* Lens tabs */
+.lens-tabs{display:flex;margin-bottom:16px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,0.06)}
+.lens-tab{flex:1;padding:16px;border:none;transition:all 0.25s;background:transparent;border-bottom:3px solid transparent;text-align:center}
+.lens-tab.active{border-bottom-color:currentColor}
+
+/* User filter */
+.ufilter{display:flex;gap:6px;margin-bottom:16px;align-items:center}
+.ufilter span{font-size:12px;color:#9CA3AF;font-weight:500}
+.ubtn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;transition:all 0.2s;background:#fff;color:#6B7280;border:1px solid #D1D5DB}
+.ubtn.active{background:#1F2937;color:#fff;border-color:#1F2937}
+
+/* Insight cards */
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.insight-card{background:#fff;border-radius:12px;padding:16px 18px;cursor:pointer;transition:all 0.25s;border:1px solid rgba(0,0,0,0.04);border-left-width:3px}
+.insight-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+.insight-card.open{box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.08)}
+.tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:2px 8px;border-radius:6px;display:inline-block}
+.user-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:6px;display:inline-block}
+
+/* Summary bar */
+.summary-bar{margin-top:16px;padding:12px 16px;background:#fff;border-radius:12px;display:flex;gap:24px;justify-content:center;border:1px solid rgba(0,0,0,0.06)}
+.summary-dot{width:8px;height:8px;border-radius:3px;display:inline-block}
+
+/* Empty */
+.empty-state{grid-column:1/-1;padding:52px 20px;text-align:center;background:#fff;border-radius:16px;border:1px solid rgba(0,0,0,0.06)}
+
+.clear-btn{font-size:11px;color:#6B7280;background:#F4F4F5;border:1px solid #E4E4E7;padding:4px 12px;border-radius:8px}
+.hint{font-size:11px;color:#9CA3AF}
+.chevron{font-size:10px;color:#9CA3AF;transition:transform 0.2s;display:inline-block}
+.chevron.open{transform:rotate(180deg)}
+</style>
+</head>
+<body>
+<div class="orb" style="top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(129,140,248,0.06) 0%,transparent 70%)"></div>
+<div class="orb" style="bottom:-300px;left:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(192,132,252,0.04) 0%,transparent 70%)"></div>
+<div id="app"></div>
+<script>
+// ─── DATA ───
+const SCREENS=[
+  {id:"home",name:"Homescreen",sn:"Home",c:"#6366F1"},
+  {id:"search",name:"Search & Filters",sn:"Search",c:"#7C3AED"},
+  {id:"restaurant-list",name:"Restaurant List",sn:"Resto list",c:"#9333EA"},
+  {id:"restaurant-page",name:"Restaurant Page",sn:"Resto page",c:"#A855F7"},
+  {id:"menu",name:"Menu / Dish view",sn:"Menu",c:"#C026D3"},
+  {id:"deals",name:"Deals & Vouchers",sn:"Deals",c:"#D97706"},
+  {id:"cart-review",name:"Cart & Review",sn:"Cart",c:"#059669"},
+  {id:"checkout",name:"Checkout",sn:"Checkout",c:"#0D9488"}
+];
+const STAGES=[
+  {id:1,name:"Awareness & Exploration",c:"#6366F1",steps:[{id:"awareness",name:"Awareness & exploration",eu:49.1,sc:["home"]}]},
+  {id:2,name:"Ordering",c:"#7C3AED",steps:[
+    {id:"discovery",name:"Discovery",eu:49.1,sc:["home","search","restaurant-list"]},
+    {id:"selection",name:"Selection",eu:64.2,sc:["restaurant-page","menu","deals"]},
+    {id:"review",name:"Review",eu:69.4,sc:["cart-review"]},
+    {id:"order",name:"Order",eu:62.2,sc:["checkout"]}
+  ]},
+  {id:3,name:"Post ordering",c:"#C026D3",steps:[{id:"post-order",name:"Post order",eu:73.2,sc:[]}]},
+  {id:4,name:"Order fulfillment",c:"#059669",steps:[{id:"tracking",name:"Order tracking",eu:66.2,sc:[]},{id:"delivery",name:"Delivery",eu:71.0,sc:[]}]},
+  {id:5,name:"Feedback",c:"#D97706",steps:[{id:"ratings",name:"Ratings",eu:68.5,sc:[]}]}
+];
+const VERTS=[{id:"multi",l:"Multi-vertical",i:"◫"},{id:"food",l:"Food delivery",i:"🍴"},{id:"qcom",l:"Q-Commerce",i:"⚡"},{id:"pickup",l:"Pick-up",i:"📦"}];
+const UTYPES=["All","New user","Existing user"];
+const TM={pain:{l:"Pain point",d:"#DC2626",bg:"#FEF2F2",bd:"#FECACA",t:"#991B1B"},observation:{l:"Observation",d:"#7C3AED",bg:"#F5F3FF",bd:"#DDD6FE",t:"#5B21B6"},opportunity:{l:"Opportunity",d:"#D97706",bg:"#FFFBEB",bd:"#FDE68A",t:"#92400E"}};
+const TC={"New user":{bg:"#EFF6FF",c:"#1E40AF",bd:"#BFDBFE"},"Existing user":{bg:"#ECFDF5",c:"#065F46",bd:"#A7F3D0"},"New user, Existing user":{bg:"#FFFBEB",c:"#92400E",bd:"#FDE68A"},All:{bg:"#F4F4F5",c:"#3F3F46",bd:"#E4E4E7"}};
+const LC={business:{l:"Business",i:"📊",a:"#1D4ED8",abg:"#DBEAFE"},product:{l:"Product",i:"⚙️",a:"#047857",abg:"#D1FAE5"},design:{l:"Design",i:"🎨",a:"#7C3AED",abg:"#EDE9FE"}};
+
+const INS=[
+  {id:"p1",x:"Users face issues with inaccurate search results when looking for a cuisine or q-comm items",s:"Fix The Basics Recurrent Issue",tg:"Existing user",tp:"pain",sc:["search","home"],ln:"product"},
+  {id:"p2",x:"Users (esp. new to the platform) are confused between verticals (Shops & Mart)",s:"#246 New Customer Journey Map, Fix The Basics Report 5",tg:"New user",tp:"pain",sc:["home"],ln:"product"},
+  {id:"p3",x:"Users are not as satisfied as they are with our competitors when it comes to Visual information / viewing dish images on menu",s:"Voice of Customer 4 data, SEQ dashboard",tg:"Existing user",tp:"pain",sc:["menu","restaurant-page"],ln:"business"},
+  {id:"p4",x:"Nested dishes – Users do not understand from which restaurant the dishes come from",s:"UXR#286 Dish-led Discovery",tg:"Existing user",tp:"pain",sc:["search","menu"],ln:"design"},
+  {id:"p5",x:"Users are unable to sort quickly based on delivery fee",s:"Voice of Customer 4 data, SEQ dashboard",tg:"Existing user",tp:"pain",sc:["restaurant-list","search"],ln:"product"},
+  {id:"p6",x:"Nested dishes – Ranking is not relevant for users in nested dishes, and image quality is often not good enough",s:"UXR#286 Dish-led Discovery",tg:"Existing user",tp:"pain",sc:["search","menu"],ln:"design"},
+  {id:"p7",x:"Users face certain issues when trying to find dishes that they want",s:"Voice of Customer 4 data, SEQ dashboard",tg:"Existing user",tp:"pain",sc:["menu","search"],ln:"product"},
+  {id:"p8",x:"Users find HomeScreen overwhelming or crowded with information due to amount of swim-lanes, banners, categories or its irrelevance",s:"#246 New Customer Journey Map, Fix The Basics Recurring Issue, #153 Modular Homescreen",tg:"New user",tp:"pain",sc:["home"],ln:"design"},
+  {id:"p9",x:"Users have issues with understanding Deals & Discounts — could benefit from more clarity. There is also a lack of trust in money-saving benefits",s:"Fix The Basics Report 5",tg:"Existing user",tp:"pain",sc:["deals","home"],ln:"business"},
+  {id:"p10",x:"Voucher tag is not clear to New and Existing users",s:"#272 Price clarity moderated",tg:"New user, Existing user",tp:"pain",sc:["deals","restaurant-page"],ln:"design"},
+  {id:"p11",x:"Users, especially new users think that the menu is not accessible, there is a need to improve a11y in menu",s:"#246 New users Journey",tg:"New user",tp:"pain",sc:["menu"],ln:"design"},
+  {id:"p12",x:"Users face issues with Campaign Banners and its content",s:"#246 New users Journey, #211 Vendor Recommendations",tg:"New user",tp:"pain",sc:["home"],ln:"design"},
+  {id:"p13",x:"Users, especially new users are unclear incentives/voucher applicability (not clear which vendors accept the voucher)",s:"#246 New users Journey",tg:"New user",tp:"pain",sc:["deals","restaurant-list"],ln:"product"},
+  {id:"o1",x:"Most of the time users know in advance the vertical they want to use",s:"Modular home screen, Map View Discovery",tg:"Existing user",tp:"observation",sc:["home"],ln:"product"},
+  {id:"o2",x:"Users that do not transact, mainly drop off at the Homescreen (20% of users)",s:"Install to order project, New User Journey 1.0",tg:"New user",tp:"observation",sc:["home"],ln:"business"},
+  {id:"o3",x:"Users are often unaware and not using Favorite as an option",s:"#80UXR-Reorder, #249UXR – Favorite Restaurants",tg:"Existing user",tp:"observation",sc:["home","restaurant-page"],ln:"product"},
+  {id:"o4",x:"The main Homescreen Job To Be Done for users is to narrow down options and avoid the choice paradox",s:"UXR#153 Modular HomeScreen",tg:"Existing user",tp:"observation",sc:["home"],ln:"product"},
+  {id:"o5",x:"Indecisive user roles would check more restaurants in one session than decisive ones and are more likely to scroll through the whole menu",s:"UXR#44 Restaurant Discovery Stage 3",tg:"Existing user",tp:"observation",sc:["restaurant-list","menu"],ln:"design"},
+  {id:"o6",x:"Decisive and Indecisive users use search for different purposes",s:"UXR#44 Restaurant Discovery Stage 3",tg:"Existing user",tp:"observation",sc:["search"],ln:"product"},
+  {id:"o7",x:"Users decision-making process on which restaurant to choose is based on price, cuisine, ratings & reviews",s:"Voice of Customer 4 dashboard",tg:"Existing user",tp:"observation",sc:["restaurant-list","restaurant-page"],ln:"business"},
+  {id:"o8",x:"'Your Restaurant' swimlanes are the primary tool for reordering; Order History serves as secondary",s:"#291 UXR – Delivery Options, Past Order Journey",tg:"Existing user",tp:"observation",sc:["home"],ln:"product"},
+  {id:"o9",x:"New Deal category in Menu makes it easier for users to find and understand selected items deals",s:"#272 Price Clarity (Restaurants)",tg:"Existing user",tp:"observation",sc:["menu","deals"],ln:"product"},
+  {id:"x1",x:"Personalise information architecture based on decisiveness spectrum / user goals",s:"UXR#44 Restaurant Discovery",tg:"Existing user",tp:"opportunity",sc:["home","restaurant-list"],ln:"design"},
+  {id:"x2",x:"Provide more personalisation for healthy choices for health-conscious customer needs",s:"UXR#44, UXR#126, UXR239, Pillars Pilot Analysis",tg:"Existing user",tp:"opportunity",sc:["home","menu","restaurant-page"],ln:"product"},
+  {id:"x3",x:"Increase awareness of non-food delivery verticals",s:"Brand trackers",tg:"Existing user",tp:"opportunity",sc:["home"],ln:"business"},
+  {id:"x4",x:"Provide more personalised recommendations",s:"UXR#153 Modular home screen, UXR211 Vendor Recommendations",tg:"Existing user",tp:"opportunity",sc:["home","restaurant-list"],ln:"product"},
+  {id:"x5",x:"Improving swim-lanes naming to make it more clear and consistent",s:"UXR211, #246 New users Journey",tg:"Existing user",tp:"opportunity",sc:["home"],ln:"design"},
+  {id:"x6",x:"Highlight non-monetary benefits (save time, save efforts, get good quality foods)",s:"UXR#44 Restaurant Discovery",tg:"Existing user",tp:"opportunity",sc:["home","restaurant-list"],ln:"business"},
+  {id:"x7",x:"Recognise that a restaurant or dishes matched user previous habit",s:"UXR#222 Vendor Tiles",tg:"Existing user",tp:"opportunity",sc:["restaurant-list","restaurant-page"],ln:"product"},
+  {id:"x8",x:"Have vendor tiles with Grid view or Carousel views for better picture and price visibility",s:"UXR#286 Dish-led Discovery",tg:"Existing user",tp:"opportunity",sc:["restaurant-list"],ln:"design"},
+  {id:"x9",x:"Introduce (personalised) dish-centred discovery",s:"UXR#222 Vendor Tiles, Product Vision 2025",tg:"Existing user",tp:"opportunity",sc:["home","search","restaurant-list"],ln:"product"},
+  {id:"x10",x:"Introduce dish-led discovery early on in the flow to aid decision making for less decisive users",s:"UXR#286 Dish-led Discovery",tg:"Existing user",tp:"opportunity",sc:["home","search"],ln:"product"},
+  {id:"x11",x:"Introduce mood-based recommendations",s:"Product Vision 2025, UXR#239 GeoLocalisation Microsite",tg:"Existing user",tp:"opportunity",sc:["home","search"],ln:"product"},
+  {id:"x12",x:"Highlight offers and social proof elements, especially for new users",s:"#246 New Customer Journey Map",tg:"New user",tp:"opportunity",sc:["home","restaurant-list","restaurant-page"],ln:"business"},
+  {id:"x13",x:"Introduce dynamic favourites and improve the visibility of the favourite icon",s:"Product Vision 2025, #249UXR",tg:"Existing user",tp:"opportunity",sc:["home","restaurant-page"],ln:"design"},
+  {id:"x14",x:"Continue improve filter visibility & results",s:"Fix The Basics Report 5, UXR#162",tg:"Existing user",tp:"opportunity",sc:["search","restaurant-list"],ln:"design"}
+];
+
+// ─── STATE ───
+let state={vert:"food",stageId:null,stepId:null,screens:[],lens:"business",ufilter:"All",jtbd:false,openCards:{}};
+const allSteps=STAGES.flatMap(s=>s.steps);
+
+function gaugeHTML(score,size,showLabel){
+  const r=(size-8)/2,circ=2*Math.PI*r,off=circ-(score/100)*circ;
+  const col=score<50?"#DC2626":score<65?"#D97706":score<75?"#2563EB":"#059669";
+  return `<div class="gauge-wrap">
+    <svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#E5E7EB" stroke-width="2.5"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="2.5" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset 0.8s"/>
+      <text x="${size/2}" y="${size/2}" text-anchor="middle" dominant-baseline="central" style="transform:rotate(90deg);transform-origin:center;font-size:${size<40?10:12}px;font-weight:600;fill:${col}">${score}%</text>
+    </svg>
+    ${showLabel?'<span class="gauge-label">Ease of use</span>':''}
+  </div>`;
+}
+
+function stepInsCount(stepId){const st=allSteps.find(s=>s.id===stepId);return st?INS.filter(i=>i.sc.some(s=>st.sc.includes(s))).length:0}
+
+function getFiltered(){
+  let p=INS.filter(i=>i.ln===state.lens);
+  if(state.screens.length>0)p=p.filter(i=>i.sc.some(s=>state.screens.includes(s)));
+  else{const st=allSteps.find(s=>s.id===state.stepId);if(st)p=p.filter(i=>i.sc.some(s=>st.sc.includes(s)))}
+  if(state.ufilter!=="All")p=p.filter(i=>i.tg.includes(state.ufilter));
+  return p;
+}
+
+function getLensCounts(){
+  let p=INS;
+  if(state.screens.length>0)p=p.filter(i=>i.sc.some(s=>state.screens.includes(s)));
+  else{const st=allSteps.find(s=>s.id===state.stepId);if(st)p=p.filter(i=>i.sc.some(s=>st.sc.includes(s)))}
+  if(state.ufilter!=="All")p=p.filter(i=>i.tg.includes(state.ufilter));
+  return{business:p.filter(i=>i.ln==="business").length,product:p.filter(i=>i.ln==="product").length,design:p.filter(i=>i.ln==="design").length};
+}
+
+// ─── RENDER ───
+function render(){
+  const stage=STAGES.find(s=>s.id===state.stageId);
+  const step=allSteps.find(s=>s.id===state.stepId);
+  const stepSc=step?SCREENS.filter(s=>step.sc.includes(s.id)):[];
+  const filtered=getFiltered();
+  const lc=getLensCounts();
+  const worst=allSteps.reduce((m,s)=>s.eu<m.eu?s:m,allSteps[0]);
+
+  let html=`
+  <header class="header"><div class="header-inner">
+    <div><div class="logo">PurplePrint</div><div class="subtitle">Customer journey insights · Pandora brands · Updated 30/9/2025</div></div>
+    <div class="vtabs">${VERTS.map(v=>`<button class="vtab${state.vert===v.id?' active':''}" onclick="setVert('${v.id}')">${v.i} ${v.l}</button>`).join('')}</div>
+  </div></header>
+  <main class="main">
+    <div class="stages">
+      ${STAGES.map((s,i)=>{
+        const act=state.stageId===s.id;
+        const avg=Math.round(s.steps.reduce((a,st)=>a+st.eu,0)/s.steps.length);
+        const tot=s.steps.reduce((a,st)=>a+stepInsCount(st.id),0);
+        return `<div class="stage-card${act?' active':''}" style="flex:${i===1?2.5:1};border-color:${act?s.c:'transparent'}" onclick="clickStage(${s.id})">
+          <div class="stage-bar" style="background:${s.c}"></div>
+          <div class="stage-header">
+            <div><span class="stage-label" style="color:${s.c}">Stage ${s.id}</span><div class="stage-name">${s.name}</div></div>
+            ${gaugeHTML(avg,44,true)}
+          </div>
+          <div class="stage-meta"><span>${tot} insights</span><span>·</span><span>${s.steps.length} step${s.steps.length>1?'s':''}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  if(!stage){
+    html+=`<div class="hotspot"><div class="hotspot-icon">🔥</div><div>
+      <p style="font-size:13px;font-weight:600;color:#991B1B">Needs attention: ${worst.name} — ${worst.eu}% ease of use</p>
+      <p style="font-size:12px;color:#B91C1C;margin-top:2px">Select a stage above to explore</p>
+    </div></div>`;
+  } else {
+    html+=`<div style="animation:fadeIn 0.3s ease">`;
+
+    // Steps
+    html+=`<div class="steps-bar">${stage.steps.map(st=>{
+      const act=state.stepId===st.id;
+      return `<button class="step-btn${act?' active':''}" style="background:${act?stage.c:'transparent'};color:${act?'#fff':'#6B7280'}" onclick="clickStep('${st.id}')">
+        <div style="font-size:13px;font-weight:600">${st.name}</div>
+        <div style="font-size:11px;opacity:0.7;margin-top:3px">${stepInsCount(st.id)} insights</div>
+        <div style="margin-top:8px">${gaugeHTML(st.eu,36,act)}</div>
+      </button>`;
+    }).join('')}</div>`;
+
+    // JTBD
+    html+=`<div class="jtbd-box">
+      <button class="jtbd-toggle" onclick="toggleJTBD()"><span>💡 Why do users come here?</span><span class="chevron${state.jtbd?' open':''}">▼</span></button>
+      ${state.jtbd?`<div class="jtbd-content">
+        ${[{l:"Functional",c:"#1D4ED8",items:["To save efforts","To save time","To narrow down options","To find offers & discounts"]},{l:"Emotional",c:"#7C3AED",items:["To satisfy craving & self-treat","To discover new foods","Get inspired exploring"]},{l:"Social",c:"#059669",items:["To order with/for someone","To celebrate"]}].map(cat=>`<div class="jtbd-col" style="flex:1"><h4 style="color:${cat.c}">${cat.l}</h4>${cat.items.map(j=>`<p>• ${j}</p>`).join('')}</div>`).join('')}
+      </div>`:''}
+    </div>`;
+
+    // Screens
+    if(stepSc.length>0){
+      html+=`<div class="screens-box">
+        <div class="screens-header">
+          <h4>🎬 Storyboard & 📱 Product screens</h4>
+          <div style="display:flex;align-items:center;gap:8px">
+            ${state.screens.length>0?`<button class="clear-btn" onclick="clearScreens()">Clear</button>`:''}
+            <span class="hint">${state.screens.length>0?state.screens.length+' selected — combined insights below':'Select screens to filter'}</span>
+          </div>
+        </div>
+        <div class="screens-row">
+          ${stepSc.map((sc,i)=>{
+            const sel=state.screens.includes(sc.id);
+            const cnt=INS.filter(ins=>ins.sc.includes(sc.id)).length;
+            return `<div class="screen-group" onclick="toggleScreen('${sc.id}')" style="animation:slideIn 0.35s ease ${i*0.07}s both">
+              <div class="screen-pair">
+                <div class="screen-story${sel?' sel':''}" style="border-color:${sel?sc.c:'#E5E7EB'};background:${sel?sc.c+'08':'#FAFAFA'}">
+                  <div style="font-size:22px;opacity:${sel?1:0.4}">🎬</div>
+                  <span style="font-size:9px;color:${sel?sc.c:'#9CA3AF'};font-weight:500">Scene ${i+1}</span>
+                  ${sel?`<div class="screen-check" style="background:${sc.c}">✓</div>`:''}
+                </div>
+                <div class="screen-phone${sel?' sel':''}" style="border-color:${sel?sc.c:'#E5E7EB'};background:${sel?sc.c+'04':'#FAFAFA'}">
+                  <div style="height:12px;background:${sc.c}10;border-bottom:1px solid ${sc.c}15;display:flex;align-items:center;justify-content:center"><div style="width:16px;height:2.5px;border-radius:2px;background:${sc.c}25"></div></div>
+                  <div style="padding:4px;display:flex;flex-direction:column;gap:2.5px">
+                    <div style="height:3px;width:65%;background:#E5E7EB;border-radius:2px"></div>
+                    <div style="height:3px;width:40%;background:#E5E7EB;border-radius:2px"></div>
+                    <div style="height:16px;background:${sc.c}06;border-radius:4px;margin-top:3px"></div>
+                    <div style="height:10px;background:#F4F4F5;border-radius:3px"></div>
+                    <div style="height:10px;background:#F4F4F5;border-radius:3px"></div>
+                    <div style="height:10px;background:#F4F4F5;border-radius:3px"></div>
+                  </div>
+                  ${sel?`<div class="screen-check-sm" style="background:${sc.c}">✓</div>`:''}
+                </div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:11.5px;font-weight:${sel?600:400};color:${sel?sc.c:'#4B5563'}">${sc.name}</div>
+                <div style="font-size:10px;color:#9CA3AF;margin-top:2px">${cnt} insights</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
+    // Lens tabs
+    html+=`<div class="lens-tabs">${Object.entries(LC).map(([k,v])=>{
+      const act=state.lens===k;const cnt=lc[k];
+      return `<button class="lens-tab${act?' active':''}" style="background:${act?v.abg:'transparent'};border-bottom-color:${act?v.a:'transparent'}" onclick="setLens('${k}')">
+        <div style="font-size:14px;font-weight:${act?600:400};color:${act?v.a:'#9CA3AF'}">${v.i} ${v.l}</div>
+        <div style="font-size:11px;color:${act?v.a+'99':'#D1D5DB'};margin-top:3px">${cnt} insight${cnt!==1?'s':''}</div>
+      </button>`;
+    }).join('')}</div>`;
+
+    // User filter
+    html+=`<div class="ufilter"><span>User type:</span>${UTYPES.map(u=>`<button class="ubtn${state.ufilter===u?' active':''}" onclick="setUFilter('${u}')">${u}</button>`).join('')}</div>`;
+
+    // Cards
+    html+=`<div class="cards-grid">`;
+    if(filtered.length>0){
+      filtered.forEach((ins,i)=>{
+        const tm=TM[ins.tp];const isOpen=state.openCards[ins.id];
+        const tags=ins.tg.split(", ");
+        const relSc=SCREENS.filter(s=>ins.sc.includes(s.id));
+        html+=`<div class="insight-card${isOpen?' open':''}" style="border-left-color:${tm.d};animation:fadeIn 0.3s ease ${i*0.04}s both" onclick="toggleCard('${ins.id}')">
+          <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center">
+            <span class="tag" style="background:${tm.bg};color:${tm.t};border:1px solid ${tm.bd}">${tm.l}</span>
+            ${tags.map(t=>{const tc=TC[t.trim()]||TC.All;return `<span class="user-tag" style="background:${tc.bg};color:${tc.c};border:1px solid ${tc.bd}">${t.trim()}</span>`}).join('')}
+            <span style="margin-left:auto" class="chevron${isOpen?' open':''}">▼</span>
+          </div>
+          <p style="font-size:13.5px;line-height:1.65;color:#374151">${ins.x}</p>
+          ${isOpen?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid #F3F4F6">
+            <p style="font-size:12px;color:#6B7280;margin-bottom:8px"><span style="font-weight:600;color:#4B5563">Source:</span> ${ins.s}</p>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              <span style="font-size:10px;color:#9CA3AF">Screens:</span>
+              ${relSc.map(s=>`<span style="font-size:10px;padding:1px 7px;border-radius:5px;background:#F4F4F5;color:#52525B;border:1px solid #E4E4E7">${s.sn}</span>`).join('')}
+            </div>
+          </div>`:''}
+        </div>`;
+      });
+    } else {
+      html+=`<div class="empty-state"><div style="font-size:32px;margin-bottom:10px;opacity:0.3">📭</div>
+        <p style="font-size:14px;color:#9CA3AF">No ${LC[state.lens].l.toLowerCase()} insights${state.ufilter!=="All"?` for "${state.ufilter}"`:''}${state.screens.length>0?' for selected screens':''}</p>
+        <p style="font-size:12px;color:#D1D5DB;margin-top:5px">Try a different lens, user type, or screen selection</p>
+      </div>`;
+    }
+    html+=`</div>`;
+
+    // Summary
+    if(filtered.length>0){
+      html+=`<div class="summary-bar">`;
+      Object.entries(TM).forEach(([tp,cfg])=>{
+        const cnt=filtered.filter(i=>i.tp===tp).length;
+        if(cnt>0)html+=`<span style="font-size:12px;color:${cfg.t};font-weight:500;display:flex;align-items:center;gap:6px"><span class="summary-dot" style="background:${cfg.d}"></span>${cnt} ${cfg.l}${cnt!==1?'s':''}</span>`;
+      });
+      html+=`</div>`;
+    }
+
+    html+=`</div>`; // close animation wrapper
+  }
+
+  html+=`</main>`;
+  document.getElementById('app').innerHTML=html;
+}
+
+// ─── ACTIONS ───
+function setVert(v){state.vert=v;state.screens=[];state.ufilter="All";render()}
+function clickStage(id){
+  if(state.stageId===id){state.stageId=null;state.stepId=null;state.screens=[]}
+  else{state.stageId=id;const s=STAGES.find(x=>x.id===id);state.stepId=s.steps[0].id;state.screens=[]}
+  state.openCards={};render();
+}
+function clickStep(id){state.stepId=id;state.screens=[];state.ufilter="All";state.openCards={};render()}
+function toggleScreen(sid){
+  const i=state.screens.indexOf(sid);
+  if(i>=0)state.screens.splice(i,1);else state.screens.push(sid);
+  state.openCards={};render();
+}
+function clearScreens(){state.screens=[];state.openCards={};render()}
+function setLens(l){state.lens=l;state.openCards={};render()}
+function setUFilter(u){state.ufilter=u;state.openCards={};render()}
+function toggleJTBD(){state.jtbd=!state.jtbd;render()}
+function toggleCard(id){state.openCards[id]=!state.openCards[id];render()}
+
+// ─── INIT ───
+render();
+</script>
+</body>
+</html>
